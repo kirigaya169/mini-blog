@@ -10,6 +10,16 @@ from .dislike import UserPostDislike
 
 
 class PostModel(Base):
+    """
+        ORM class for post model
+        id - primary key of row
+        header - header of post
+        content - text of post
+        likes_count - count of likes
+        dislikes_count - count of dislikes
+        author_id - id of user who create this post
+
+        """
     __tablename__ = "post"
     id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
     header: Mapped[str] = mapped_column(String, nullable=False)
