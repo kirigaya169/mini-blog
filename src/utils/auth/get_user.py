@@ -1,23 +1,35 @@
 import jwt
 import os
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from typing import Annotated
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import HTTPException, status
 from schemas import UserSchema
-from utils import CRUD
+from utils import CRUD, db_session_dependency
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/user/login')
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: Session) \
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: Annotated[str, Depends(db_session_dependency)]) \
         -> UserSchema:
+    """
+    Dependency for getting user info by JWT token
+    :param token:
+    :param session:
+    :return:
+    """
     cred_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                    detail='Could not validate credentials')
     try:
         payload = jwt.decode(token, os.environ.get('JWT_SECRET', 'secret'), 'HS256')
         username: str = payload.get("user")
+        expire_time: datetime = datetime.strptime(payload.get('expires'), '%m-%y-%d %H:%M:%S')
+        print(expire_time, datetime.now(timezone.utc))
+        if datetime.now(timezone.utc) > expire_time:
+            raise cred_exception
+
     except jwt.PyJWTError:
         raise cred_exception
     user_model = CRUD(session).get_user(username)

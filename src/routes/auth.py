@@ -12,6 +12,12 @@ router = APIRouter(prefix='/user')
 
 @router.post('/register', response_model=TokenSchema)
 async def reigster(user: UserSchema, session: Session = Depends(db_session_dependency)):
+    """
+    Route for user registration
+    :param user: user data
+    :param session: session object for CRUD
+    :return:
+    """
     created_user: UserSchema = CRUD(session).create_user(user.name, user.password)
     return TokenSchema(token=get_token(created_user.name))
 
@@ -19,6 +25,12 @@ async def reigster(user: UserSchema, session: Session = Depends(db_session_depen
 @router.post('/login', response_model=TokenSchema)
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                 session: Session = Depends(db_session_dependency)):
+    """
+    Route for getting JWT tokens
+    :param form_data: user data
+    :param session: session object for CRUD
+    :return:
+    """
     db_user: UserSchema | None = CRUD(session).get_user(form_data.username)
     if not db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,

@@ -2,6 +2,9 @@ from pydantic import BaseModel
 from typing import List
 
 class SmallPostScheme(BaseModel):
+    """
+    Small schema for queries with big amount of posts
+    """
     id: int
     header: str
     content: str

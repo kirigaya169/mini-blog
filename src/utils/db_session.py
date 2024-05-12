@@ -17,6 +17,10 @@ SessionMaker = sessionmaker(autoflush=False, bind=engine)
 
 
 def db_session_dependency():
+    """
+    Dependency for getting session object
+    :return:
+    """
     session = SessionMaker()
     try:
         yield session
