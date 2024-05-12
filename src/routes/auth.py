@@ -20,7 +20,6 @@ async def login(username: str, password: str, session: Session = Depends(db_sess
     if not db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f'User {username} doesn\'t exist')
-    #hashed = hashpw(password.encode(), salt)
     if not checkpw(password.encode(), db_user.password.encode()):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail='Wrong password')

@@ -5,8 +5,9 @@ from .base import Base
 
 from typing import List
 
-from .like import UserPostLike
-from .dislike import UserPostDislike
+from .like import UserPostLikeModel
+from .dislike import UserPostDislikeModel
+from .comment import CommentModel
 
 
 class PostModel(Base):
@@ -29,6 +30,7 @@ class PostModel(Base):
     author_id: Mapped[int] = mapped_column(ForeignKey('user.id', ondelete="cascade"))
 
     author: Mapped['UserModel'] = relationship(backref='posts')
-    likes: Mapped[List['UserPostLike']] = relationship('UserPostLike')
-    dislike: Mapped[List['UserPostDislike']] = relationship('UserPostDislike')
+    likes: Mapped[List['UserPostLikeModel']] = relationship('UserPostLike')
+    dislike: Mapped[List['UserPostDislikeModel']] = relationship('UserPostDislike')
+    comments: Mapped[List['CommentModel']] = relationship('CommentModel')
 

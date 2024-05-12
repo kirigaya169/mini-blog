@@ -3,7 +3,7 @@ from sqlalchemy import Integer, ForeignKey
 from .base import Base
 
 
-class UserPostDislike(Base):
+class UserPostDislikeModel(Base):
     """
     ORM class for user_post_dislike model
     id - primary key of row
