@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, TEXT, ForeignKey
+from sqlalchemy import String, Integer, TEXT, ForeignKey, DateTime
 from .user import UserModel
 from .base import Base
 
@@ -8,6 +8,8 @@ from typing import List
 from .like import UserPostLikeModel
 from .dislike import UserPostDislikeModel
 from .comment import CommentModel
+
+from datetime import datetime
 
 
 class PostModel(Base):
@@ -28,9 +30,7 @@ class PostModel(Base):
     likes_count: Mapped[int] = mapped_column(Integer, default=0)
     dislikes_count: Mapped[int] = mapped_column(Integer, default=0)
     author_id: Mapped[int] = mapped_column(ForeignKey('user.id', ondelete="cascade"))
+    created_at: Mapped[datetime] = mapped_column(DateTime)
 
     author: Mapped['UserModel'] = relationship(backref='posts')
-    likes: Mapped[List['UserPostLikeModel']] = relationship('UserPostLike')
-    dislike: Mapped[List['UserPostDislikeModel']] = relationship('UserPostDislike')
-    comments: Mapped[List['CommentModel']] = relationship('CommentModel')
 
