@@ -16,6 +16,7 @@ router = APIRouter(prefix='/posts', dependencies=[Depends(db_session_dependency)
 UserType = Annotated[UserSchema, Depends(get_current_user)]
 SessionDep = Annotated[Session, Depends(db_session_dependency)]
 
+
 @router.get('/', response_model=List[SmallPostSchema])
 async def get_last_posts(limit: int,
                          session: SessionDep):
@@ -36,7 +37,7 @@ async def get_user_posts(user_id: int, limit: int,
     Get posts made by user
     :param user_id: id of user to get posts from
     :param limit: limitation of answer
-    :param user: JWT token of current user
+    :param user: current user
     :param session: session object for CRUD
     :return:
     """
@@ -46,17 +47,38 @@ async def get_user_posts(user_id: int, limit: int,
 @router.post('/', response_model=SmallPostSchema)
 async def create_post(post: PostRequestSchema, user: UserType,
                       session: SessionDep):
+    """
+    Route for post creation
+    :param post: post information
+    :param user: current user
+    :param session:
+    :return:
+    """
     return CRUD(session).create_post(user.name, post)
 
 
 @router.post('/add_like/{post_id}')
 async def add_like(post_id: int, user: UserType, session: SessionDep):
+    """
+    Add like to post
+    :param post_id: id of a post
+    :param user: current user
+    :param session:
+    :return:
+    """
     CRUD(session).add_like(user.name, post_id, True)
     return {'status': 'ok'}
 
 
 @router.post('/add_dislike/{post_id}')
 async def add_dislike(post_id: int, user: UserType, session: SessionDep):
+    """
+    Add dislike to post
+    :param post_id: id of a post
+    :param user: current user
+    :param session:
+    :return:
+    """
     CRUD(session).add_like(user.name, post_id, False)
     return {'status': 'ok'}
 
@@ -66,9 +88,25 @@ async def add_comment(post_id: int,
                       comment: CommentSchema,
                       user: UserType,
                       session: SessionDep):
+    """
+    Add a comment to a post
+    :param post_id: id of a post
+    :param comment: comment
+    :param user: current user
+    :param session:
+    :return:
+    """
     CRUD(session).add_comment(user.name, post_id, comment.comment)
     return {'status': 'ok'}
 
+
 @router.get('/{post_id}', response_model=PostSchema)
 def get_post_info(post_id: int, user: UserType, session: SessionDep):
+    """
+    get additional info about post
+    :param post_id: id of a post
+    :param user: current user
+    :param session:
+    :return:
+    """
     return CRUD(session).get_post_info(post_id)

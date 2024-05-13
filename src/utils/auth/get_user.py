@@ -1,6 +1,6 @@
 import jwt
 import os
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy.orm import Session
 from typing import Annotated
 from fastapi import Depends

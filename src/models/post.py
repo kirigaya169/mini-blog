@@ -33,4 +33,3 @@ class PostModel(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime)
 
     author: Mapped['UserModel'] = relationship(backref='posts')
-

@@ -113,6 +113,12 @@ class CRUD:
         return result
 
     def create_post(self, username: str, post: PostRequestSchema):
+        """
+        Method for post creation
+        :param username: post author
+        :param post: post content
+        :return:
+        """
         stmt = select(UserModel).where(UserModel.name == username)
         post_model = PostModel(header=post.header, content=post.content,
                                author_id=self.session.scalars(stmt).one().id,
@@ -128,6 +134,13 @@ class CRUD:
                                comments_count=0)
 
     def add_like(self, username: str, post_id: int, is_like: bool):
+        """
+        Add like or dislike to post
+        :param username: like's author
+        :param post_id: id of a post
+        :param is_like: add like or dislike
+        :return:
+        """
         if is_like:
             model_class = UserPostLikeModel
         else:
@@ -141,8 +154,8 @@ class CRUD:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail='Post with this ID doesn\'t exist')
         if (self.session.scalars(select(model_class)
-                                         .where(model_class.post_id == post_object.id)
-                                         .where(model_class.user_id == user_id))).one_or_none() is not None:
+                                 .where(model_class.post_id == post_object.id)
+                                 .where(model_class.user_id == user_id))).one_or_none() is not None:
 
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail='User cannot add like/dislike to this post')
@@ -155,6 +168,13 @@ class CRUD:
         self.session.commit()
 
     def add_comment(self, username: str, post_id: int, comment: str):
+        """
+        Add a comment to post
+        :param username: author of a comment
+        :param post_id: id of a post
+        :param comment: comment string
+        :return:
+        """
         user_id = self.session.scalars(select(UserModel).where(UserModel.name == username)).one().id
         if self.session.scalars(select(PostModel).where(PostModel.id == post_id)).one_or_none() is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -164,24 +184,29 @@ class CRUD:
         self.session.commit()
 
     def get_post_info(self, post_id: int):
+        """
+        get full info about post
+        :param post_id: id of a post
+        :return:
+        """
         post = self.session.scalars(select(PostModel).where(PostModel.id == post_id)).one_or_none()
         if post is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail='There is no post with this ID')
         comments = []
         for comment in self.session.execute(select(CommentModel, UserModel)
-                                                    .join(UserModel)
-                                                    .filter(UserModel.id == CommentModel.user_id)
-                                                    .where(CommentModel.post_id == post_id)):
+                                            .join(UserModel)
+                                            .filter(UserModel.id == CommentModel.user_id)
+                                            .where(CommentModel.post_id == post_id)):
             comments.append(CommentSmallSchema(
                 username=comment.UserModel.name,
                 comment=comment.CommentModel.comment
             ))
         likes = []
         for like in self.session.execute(select(UserPostLikeModel, UserModel)
-                                                 .join(UserModel)
-                                                 .filter(UserModel.id == UserPostLikeModel.user_id)
-                                                 .where(UserPostLikeModel.post_id == post_id)):
+                                         .join(UserModel)
+                                         .filter(UserModel.id == UserPostLikeModel.user_id)
+                                         .where(UserPostLikeModel.post_id == post_id)):
             likes.append(UserLikeSchema(
                 id=like.UserModel.id,
                 username=like.UserModel.name
@@ -189,9 +214,9 @@ class CRUD:
 
         dislikes = []
         for dislike in self.session.execute(select(UserPostDislikeModel, UserModel)
-                                                    .join(UserModel)
-                                                    .filter(UserModel.id == UserPostDislikeModel.user_id)
-                                                    .where(UserPostDislikeModel.post_id == post_id)):
+                                            .join(UserModel)
+                                            .filter(UserModel.id == UserPostDislikeModel.user_id)
+                                            .where(UserPostDislikeModel.post_id == post_id)):
             dislikes.append(UserLikeSchema(
                 id=dislike.UserModel.id,
                 username=dislike.UserModel.name
