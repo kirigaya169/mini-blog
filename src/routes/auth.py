@@ -38,4 +38,4 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     if not checkpw(form_data.password.encode(), db_user.password.encode()):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail='Wrong password')
-    return TokenSchema(token=get_token(form_data.username))
+    return TokenSchema(access_token=get_token(form_data.username), token_type="bearer")

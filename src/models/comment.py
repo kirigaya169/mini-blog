@@ -1,6 +1,7 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, ForeignKey, TEXT
 from .base import Base
+from .user import UserModel
 
 
 class CommentModel(Base):
@@ -16,3 +17,5 @@ class CommentModel(Base):
     comment = mapped_column(TEXT, nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
     post_id: Mapped[int] = mapped_column(ForeignKey('post.id'))
+
+    author: Mapped['UserModel'] = relationship()

@@ -4,4 +4,5 @@ class TokenSchema(BaseModel):
     """
     Simple token schema for sending tokens
     """
-    token: str
+    access_token: str
+    token_type: str
