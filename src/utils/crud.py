@@ -3,7 +3,7 @@ import datetime
 from bcrypt import hashpw, gensalt
 from dotenv import load_dotenv
 from fastapi import HTTPException, status
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from sqlalchemy.orm import Session
 
 from models import (
@@ -62,6 +62,10 @@ class CRUD:
         self.session.add(user)
         self.session.commit()
         return UserSchema(name=username, password=hashed)
+
+    def delete_user(self, username: str):
+        self.session.execute(delete(UserModel).where(UserModel.name == username))
+        self.session.commit()
 
     def get_post_comments_count(self, row: PostModel):
         """

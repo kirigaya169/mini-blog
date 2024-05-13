@@ -3,9 +3,9 @@ from schemas import TokenSchema, UserSchema
 from utils import db_session_dependency, CRUD, salt
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
-from utils.auth import get_token
+from utils.auth import get_token, get_current_user
 from sqlalchemy.orm import Session
-from bcrypt import hashpw, checkpw
+from bcrypt import checkpw
 
 router = APIRouter(prefix='/user')
 
@@ -39,3 +39,9 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail='Wrong password')
     return TokenSchema(access_token=get_token(form_data.username), token_type="bearer")
+
+@router.delete('/delete')
+def delete_user(user: Annotated[UserSchema, Depends(get_current_user)],
+                session: Annotated[Session, Depends(db_session_dependency)]):
+    CRUD(session).delete_user(user.name)
+    return {"status": "OK"}
