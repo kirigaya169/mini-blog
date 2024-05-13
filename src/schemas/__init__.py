@@ -1,10 +1,10 @@
 from .user import UserSchema
 from .token import TokenSchema
 from .posts import (
-    SmallPostScheme,
+    SmallPostSchema,
     PostRequestSchema,
-    CommentSmallScheme,
-    PostScheme,
-    UserLikeScheme
+    CommentSmallSchema,
+    PostSchema,
+    UserLikeSchema
 )
 from .comment import CommentSchema

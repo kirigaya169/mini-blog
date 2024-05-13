@@ -15,11 +15,11 @@ from models import (
 )
 from schemas import (
     UserSchema,
-    SmallPostScheme,
+    SmallPostSchema,
     PostRequestSchema,
-    UserLikeScheme,
-    PostScheme,
-    CommentSmallScheme
+    UserLikeSchema,
+    PostSchema,
+    CommentSmallSchema
 )
 
 load_dotenv()
@@ -82,7 +82,7 @@ class CRUD:
         stmt = select(PostModel).order_by(PostModel.created_at.desc()).limit(limit)
         result = []
         for row in self.session.scalars(stmt):
-            result.append(SmallPostScheme(
+            result.append(SmallPostSchema(
                 id=row.id,
                 header=row.header,
                 content=row.content,
@@ -102,7 +102,7 @@ class CRUD:
         stmt = select(PostModel).where(PostModel.author_id == user_id).limit(limit)
         result = []
         for row in self.session.scalars(stmt):
-            result.append(SmallPostScheme(
+            result.append(SmallPostSchema(
                 id=row.id,
                 header=row.header,
                 content=row.content,
@@ -120,7 +120,7 @@ class CRUD:
         self.session.add(post_model)
         self.session.commit()
         self.session.refresh(post_model)
-        return SmallPostScheme(id=post_model.id,
+        return SmallPostSchema(id=post_model.id,
                                header=post_model.header,
                                content=post_model.content,
                                like_count=0,
@@ -140,9 +140,10 @@ class CRUD:
         if post_object is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail='Post with this ID doesn\'t exist')
-        if (self.session.scalars(select(model_class).
-                                         where(model_class.post_id == post_object.id and
-                                               model_class.user_id == user_id))).one_or_none() is not None:
+        if (self.session.scalars(select(model_class)
+                                         .where(model_class.post_id == post_object.id)
+                                         .where(model_class.user_id == user_id))).one_or_none() is not None:
+
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail='User cannot add like/dislike to this post')
         if is_like:
@@ -169,33 +170,33 @@ class CRUD:
                                 detail='There is no post with this ID')
         comments = []
         for comment in self.session.execute(select(CommentModel, UserModel)
-                                            .join(UserModel)
-                                            .filter(UserModel.id == CommentModel.user_id)
-                                            .where(CommentModel.post_id == post_id)):
-            comments.append(CommentSmallScheme(
+                                                    .join(UserModel)
+                                                    .filter(UserModel.id == CommentModel.user_id)
+                                                    .where(CommentModel.post_id == post_id)):
+            comments.append(CommentSmallSchema(
                 username=comment.UserModel.name,
                 comment=comment.CommentModel.comment
             ))
         likes = []
         for like in self.session.execute(select(UserPostLikeModel, UserModel)
                                                  .join(UserModel)
-                                                .filter(UserModel.id == UserPostLikeModel.user_id)
-                                                .where(UserPostLikeModel.post_id == post_id)):
-            likes.append(UserLikeScheme(
+                                                 .filter(UserModel.id == UserPostLikeModel.user_id)
+                                                 .where(UserPostLikeModel.post_id == post_id)):
+            likes.append(UserLikeSchema(
                 id=like.UserModel.id,
                 username=like.UserModel.name
             ))
 
         dislikes = []
         for dislike in self.session.execute(select(UserPostDislikeModel, UserModel)
-                                                 .join(UserModel)
-                                                .filter(UserModel.id == UserPostDislikeModel.user_id)
-                                                .where(UserPostDislikeModel.post_id == post_id)):
-            dislikes.append(UserLikeScheme(
+                                                    .join(UserModel)
+                                                    .filter(UserModel.id == UserPostDislikeModel.user_id)
+                                                    .where(UserPostDislikeModel.post_id == post_id)):
+            dislikes.append(UserLikeSchema(
                 id=dislike.UserModel.id,
                 username=dislike.UserModel.name
             ))
-        return PostScheme(
+        return PostSchema(
             id=post_id,
             header=post.header,
             content=post.content,

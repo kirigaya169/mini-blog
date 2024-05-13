@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List
 
-class SmallPostScheme(BaseModel):
+class SmallPostSchema(BaseModel):
     """
     Small schema for queries with big amount of posts
     """
@@ -18,20 +18,20 @@ class PostRequestSchema(BaseModel):
     content: str
 
 
-class UserLikeScheme(BaseModel):
+class UserLikeSchema(BaseModel):
     id: int
     username: str
 
 
-class CommentSmallScheme(BaseModel):
+class CommentSmallSchema(BaseModel):
     username: str
     comment: str
 
 
-class PostScheme(BaseModel):
+class PostSchema(BaseModel):
     id: int
     header: str
     content: str
-    likes: List[UserLikeScheme]
-    dislikes: List[UserLikeScheme]
-    comments: List[CommentSmallScheme]
+    likes: List[UserLikeSchema]
+    dislikes: List[UserLikeSchema]
+    comments: List[CommentSmallSchema]

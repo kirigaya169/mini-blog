@@ -11,7 +11,7 @@ router = APIRouter(prefix='/user')
 
 
 @router.post('/register', response_model=TokenSchema)
-async def reigster(user: UserSchema, session: Session = Depends(db_session_dependency)):
+async def register(user: UserSchema, session: Session = Depends(db_session_dependency)):
     """
     Route for user registration
     :param user: user data
@@ -19,7 +19,7 @@ async def reigster(user: UserSchema, session: Session = Depends(db_session_depen
     :return:
     """
     created_user: UserSchema = CRUD(session).create_user(user.name, user.password)
-    return TokenSchema(token=get_token(created_user.name))
+    return TokenSchema(access_token=get_token(created_user.name), token_type="bearer")
 
 
 @router.post('/login', response_model=TokenSchema)

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from schemas import (
-    SmallPostScheme,
+    SmallPostSchema,
     UserSchema,
     PostRequestSchema,
     CommentSchema,
-    PostScheme
+    PostSchema
 )
 from typing import List, Annotated
 from utils.auth import get_current_user
@@ -16,7 +16,7 @@ router = APIRouter(prefix='/posts', dependencies=[Depends(db_session_dependency)
 UserType = Annotated[UserSchema, Depends(get_current_user)]
 SessionDep = Annotated[Session, Depends(db_session_dependency)]
 
-@router.get('/', response_model=List[SmallPostScheme])
+@router.get('/', response_model=List[SmallPostSchema])
 async def get_last_posts(limit: int,
                          session: SessionDep):
     """
@@ -28,7 +28,7 @@ async def get_last_posts(limit: int,
     return CRUD(session).get_last_posts(limit)
 
 
-@router.get('/user/{user_id}', response_model=List[SmallPostScheme])
+@router.get('/user/{user_id}', response_model=List[SmallPostSchema])
 async def get_user_posts(user_id: int, limit: int,
                          user: UserType,
                          session: SessionDep):
@@ -43,7 +43,7 @@ async def get_user_posts(user_id: int, limit: int,
     return CRUD(session).get_user_posts(user_id, limit)
 
 
-@router.post('/', response_model=SmallPostScheme)
+@router.post('/', response_model=SmallPostSchema)
 async def create_post(post: PostRequestSchema, user: UserType,
                       session: SessionDep):
     return CRUD(session).create_post(user.name, post)
@@ -69,6 +69,6 @@ async def add_comment(post_id: int,
     CRUD(session).add_comment(user.name, post_id, comment.comment)
     return {'status': 'ok'}
 
-@router.get('/{post_id}', response_model=PostScheme)
+@router.get('/{post_id}', response_model=PostSchema)
 def get_post_info(post_id: int, user: UserType, session: SessionDep):
     return CRUD(session).get_post_info(post_id)
