@@ -1,4 +1,6 @@
 # mini-blog
+![](coverage/coverage.svg)
+
 Веб-приложение, позволяющее создавать текстовые блоги и
 обмениваться ими.
 
@@ -19,6 +21,17 @@
 docker compose up
 ```
 API можно воспользоваться на странице `0.0.0.0/docs`
+
+## Запуск тестов
+```shell
+pip install -r requirements.txt
+pip install pytest httpx coverage
+cd src
+coverage run -m pytest ../tests/ # запуск тестов
+coverage report -m # вывести отчет
+coverage html # создать html отчет
+```
+
 ## Используемые библиотеки
 ```
 fastapi==0.110.2
@@ -62,7 +75,7 @@ PostgresQL.
 Для работы с данными таблицами будут использоваться соответствующие ORM классы
 
 ## Основные пути
-- `/user/registration` - создание пользователя (возвращает JWT-токен)
+- `/user/register` - создание пользователя (возвращает JWT-токен)
 - `/user/login` - вход в систему (возвращает JWT-токен)
 - `/user/delete` - удаление пользователя
 - `/posts/` - возвращает ленту с постами(возвращает список недавних постов)

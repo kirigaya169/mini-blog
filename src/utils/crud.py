@@ -96,14 +96,15 @@ class CRUD:
             ))
         return result
 
-    def get_user_posts(self, user_id: int, limit: int):
+    def get_user_posts(self, user_name: str, limit: int):
         """
         Get posts that were published by user
-        :param user_id: id of user
+        :param user_name: name of user
         :param limit: limitation of an answer
         :return:
         """
-        stmt = select(PostModel).where(PostModel.author_id == user_id).limit(limit)
+        user = self.session.scalars(select(UserModel).where(UserModel.name == user_name)).one()
+        stmt = select(PostModel).where(PostModel.author_id == user.id).limit(limit)
         result = []
         for row in self.session.scalars(stmt):
             result.append(SmallPostSchema(

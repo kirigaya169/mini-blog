@@ -29,19 +29,19 @@ async def get_last_posts(limit: int,
     return CRUD(session).get_last_posts(limit)
 
 
-@router.get('/user/{user_id}', response_model=List[SmallPostSchema])
-async def get_user_posts(user_id: int, limit: int,
+@router.get('/user/{user_name}', response_model=List[SmallPostSchema])
+async def get_user_posts(user_name: str, limit: int,
                          user: UserType,
                          session: SessionDep):
     """
     Get posts made by user
-    :param user_id: id of user to get posts from
+    :param user_name: name of user to get posts from
     :param limit: limitation of answer
     :param user: current user
     :param session: session object for CRUD
     :return:
     """
-    return CRUD(session).get_user_posts(user_id, limit)
+    return CRUD(session).get_user_posts(user_name, limit)
 
 
 @router.post('/', response_model=SmallPostSchema)
